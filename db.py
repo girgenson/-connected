@@ -159,15 +159,3 @@ entries = [
         'links': {n + 10, }
     }
 ]
-
-if __name__ == '__main__':
-    start = [i['name'] for i in entries if i['id'] == n][0]
-    end = [i['name'] for i in entries if i['id'] == n + 11][0]
-
-    # print(find_degrees_2(start, end, entries))
-
-    path = find_degrees_2(start, end, entries)
-    if path:
-        print('WE FIND IT')
-        print('Quantity of connections:', len(path) - 2)
-        print('\n', *[i for i in path], sep='\n->\n')
