@@ -1,18 +1,3 @@
-__entries_2 = {
-    339: {'links': {228, 4410, 5511, 6612}},
-    228: {'links': {7713, 8814, 9981, 339}},
-    4410: {'links': {339}},
-    5511: {'links': {339}},
-    6612: {'links': {339}},
-    7713: {'links': {1234, 121, 222, 228}},
-    1234: {'links': {7713}},
-    121: {'links': {7713}},
-    222: {'links': {7713}},
-    8814: {'links': {228}},
-    9981: {'links': {228}},
-}
-
-
 def find_degrees(initial_element: int, end_element: int, _database: dict, path: list = []):
     path = path + [initial_element]
     if initial_element == end_element:
@@ -26,5 +11,29 @@ def find_degrees(initial_element: int, end_element: int, _database: dict, path: 
                 return newpath
 
 
-print(find_degrees(339, 222, __entries_2))
-print(find_degrees(339, 6612, __entries_2))
+def find_degrees_2(initial_element: str, end_element: str, _database: list, path: list = []):
+    path = path + [initial_element]
+    current_id = None
+    extract_name = None
+    if initial_element == end_element:
+        return path
+    for elem in _database:
+        extract_name = elem.get('name')
+        if initial_element == extract_name:
+            current_id = elem['id']
+            break
+
+    if current_id is None:
+        return None
+    current_links = [i['links'] for i in _database if i['name'] == initial_element]
+
+    for elem_id in current_links[0]:
+        elem_name = [i['name'] for i in _database if i['id'] == elem_id][0]
+
+        if elem_name not in path:
+            newpath = find_degrees_2(elem_name, end_element, _database, path)
+            if newpath:
+                return newpath
+
+
+

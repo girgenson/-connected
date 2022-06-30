@@ -1,9 +1,12 @@
 import random
 
+from find_degrees import find_degrees_2
+
 n = random.randint(10 ** 9, 10 ** 10)
 print(n)
 type_of_entries = {1: 'person', 2: 'musician', 3: 'rapper', 4: 'actor', 5: 'article', 6: 'song', 7: 'track',
-                   8: 'producer', 9: 'songwriter', 10: 'article', 11: 'movie_director'}
+                   8: 'producer', 9: 'songwriter', 10: 'article', 11: 'movie_director', 12: 'online newspaper',
+                   13: 'film', 14: 'animated film'}
 
 entries = [
 
@@ -62,22 +65,22 @@ entries = [
          'Willard Carroll "Will" Smith II (born September 25, 1968) is an American actor, comedian, producer, '
          'rapper, and songwriter. He has enjoyed success in television, film, and music. In April 2007, '
          'Newsweek called him "the most powerful actor in Hollywood".',
-     'links': {n + 3, }
+     'links': {n + 3, n, }
      },
 
     {
         'id': n + 3, 'name': 'Friend Like Me (End Title)', 'alias': 'Friend Like Me, End Title',
         'type': {type_of_entries[6], type_of_entries[7], },
         'release_year': '2019', 'producers': 'DJ Khaled, Danja, Ben Billions',
-        'links': {n + 4, }
+        'links': {n + 4, n + 2}
     },
 
     {'id': n + 4, 'name': 'Danja', 'alias': 'Floyd Nathaniel Hills', 'type': {type_of_entries[8], type_of_entries[9]},
-     'links': {n + 5, n + 4, n + 7}
+     'links': {n + 5, n + 3, n + 7}
      },
 
     {'id': n + 5, 'name': 'Maneater (Remix)', 'alias': 'Nelly Furtado feat. Lil Wayne - Maneater (Remix)',
-     'type': {type_of_entries[6], type_of_entries[7], }, 'links': {n + 5, n + 6}
+     'type': {type_of_entries[6], type_of_entries[7], }, 'links': {n + 4, n + 6}
      },
 
     {'id': n + 6, 'name': 'Nelly Furtado', 'alias': 'Nelly Kim Furtado, born December 2, 1978',
@@ -88,17 +91,18 @@ entries = [
          'two top 10 singles on the Billboard Hot 100, I\'m Like a Bird and Turn Off the Light. The first of the two '
          'singles won her a Grammy Award for Best Female Pop Vocal Performance. Furtado\'s introspective folk-heavy '
          '2003 second album, Folklore, explored her Portuguese roots. Its singles received moderate success in Europe,'
-         'but the album\'s underperformance compared to her debut was regarded as a sophomore slump.'
+         'but the album\'s underperformance compared to her debut was regarded as a sophomore slump.',
+     'links': {n + 5, }
      },
 
-    {'id': n + 7, 'name': 'Sober_(Pink_song)'},
+    {'id': n + 7, 'name': 'Sober_(Pink_song)', 'links': {n + 4, n + 9}},
 
     {'id': n + 8, 'name': 'Jimmy Fallon', 'links': {n + 1, }},
 
     {
-        'id': n + 9, 'name': 'Pink: The Truth About Love', 'type': 'article',
+        'id': n + 9, 'name': 'Pink: The Truth About Love', 'type': {type_of_entries[10], },
         'content':
-         '''Since approximately the turn of the millennium, Pink has been the most emotionally honest pop singer to 
+            '''Since approximately the turn of the millennium, Pink has been the most emotionally honest pop singer to 
      approach Top 40 radio on its own terms. (As opposed to Adele, who made Top 40 radio approach her on her terms.) 
      Think about her competition: Even when she’s allegedly opening up, does anybody think that “If I Were A Boy” or 
      “Irreplaceable” actually reveal anything about Beyoncé? But when Pink sings “Don’t Let Me Get Me,” “Sober,
@@ -114,17 +118,17 @@ entries = [
      other songs sound as though they were produced in a panic the day after Kelly Clarkson’s Stronger came out.''',
 
         'links': {n + 10, n + 7}
-     },
+    },
 
     {
-        'id': n + 10, 'name': 'The_A.V._Club', 'type': 'online newspaper',
+        'id': n + 10, 'name': 'The_A.V._Club', 'type': {type_of_entries[12], },
         'links': {n + 9, n + 11}
     },
 
     {
-        'id': n + 11, 'name': 'WALL-E', 'type': 'film, animated film',
+        'id': n + 11, 'name': 'WALL-E', 'type': {type_of_entries[13], type_of_entries[14]},
         'content':
-        '''WALL-E (stylized with an interpunct as WALL·E) is a 2008 American computer-animated science fiction film[
+            '''WALL-E (stylized with an interpunct as WALL·E) is a 2008 American computer-animated science fiction film[
         4] produced by Pixar Animation Studios and released by Walt Disney Pictures. It was directed and co-written 
         by Andrew Stanton, produced by Jim Morris, and co-written by Jim Reardon. It stars the voices of Ben Burtt, 
         Elissa Knight, Jeff Garlin, John Ratzenberger, Kathy Najimy, with Sigourney Weaver and Fred Willard. The 
@@ -151,11 +155,19 @@ entries = [
         considered the best of the 21st century by 117 film critics from around the world.[16] 
 
         In 2021, the film was selected for preservation in the United States National Film Registry by the Library of 
-        Congress as being "culturally, historically, or aesthetically significant". '''
+        Congress as being "culturally, historically, or aesthetically significant". ''',
+        'links': {n + 10, }
     }
 ]
 
+if __name__ == '__main__':
+    start = [i['name'] for i in entries if i['id'] == n][0]
+    end = [i['name'] for i in entries if i['id'] == n + 11][0]
 
-print([i['content'] for i in entries if i['id'] == n + 1])
-print([i['links'] for i in entries if i['id'] == n + 1])
-print([i['content'] for i in entries if i['name'] == 'Nelly Furtado'])
+    # print(find_degrees_2(start, end, entries))
+
+    path = find_degrees_2(start, end, entries)
+    if path:
+        print('WE FIND IT')
+        print('Quantity of connections:', len(path) - 2)
+        print('\n', *[i for i in path], sep='\n->\n')
