@@ -8,7 +8,7 @@
 {% block body %}
 <br><br>
 <h3>
-    &nbsp;Path from {{ start }} to {{ end }}:
+    &nbsp;Path from <b>{{ start }}</b> to <b>{{ end }}</b>:
 </h3>
 <div class="center">
     <ul class="list-group">
@@ -19,8 +19,13 @@
         {% endif %}
     </ul>
     <br>
+    {% if path %}
+        Degrees of separation: <b>{{ path|length- 2 }}</b>
+    {% endif %}
+    <br>
+    <br>
     <span class="border border-top">
-        {{ arrowed_path }}
+        {{ arrowed_path|safe }}
     </span>
 </div>
-{% endblock body %}}
+{% endblock body %}
