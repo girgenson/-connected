@@ -1,7 +1,5 @@
 import random
 
-from find_degrees import find_degrees_2
-
 n = random.randint(10 ** 9, 10 ** 10)
 print(n)
 type_of_entries = {1: 'person', 2: 'musician', 3: 'rapper', 4: 'actor', 5: 'article', 6: 'song', 7: 'track',

@@ -7,6 +7,7 @@ from db import entries
 
 
 class TestStringMethods(unittest.TestCase):
+
     def test_end_elements_of_path_are_searched_elements_friend_danja(self):
         path = find_degrees_2('Friend Like Me (End Title)', 'Danja', entries)
         self.assertEqual(('Friend Like Me (End Title)', 'Danja'), (path[0], path[-1]))
@@ -27,6 +28,18 @@ class TestStringMethods(unittest.TestCase):
         for perm in perm_all_elems:
             path = find_degrees_2(perm[0], perm[1], entries)
             self.assertEqual((perm[0], perm[1]), (path[0], path[-1]))
+
+    def test_same_element(self):
+        all_elems = [i['name'] for i in entries]
+        for i in all_elems:
+            path = find_degrees_2(i, i, entries)
+            self.assertEqual((i, i), (path[0], path[-1]))
+
+    def test_seme_element_path_length(self):
+        all_elems = [i['name'] for i in entries]
+        for i in all_elems:
+            path = find_degrees_2(i, i, entries)
+            self.assertEqual(1, len(path))
 
 
 if __name__ == '__main__':

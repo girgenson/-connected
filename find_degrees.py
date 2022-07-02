@@ -14,7 +14,6 @@ def find_degrees(initial_element: int, end_element: int, _database: dict, path: 
 def find_degrees_2(initial_element: str, end_element: str, _database: list, path: list = []):
     path = path + [initial_element]
     current_id = None
-    extract_name = None
     if initial_element == end_element:
         return path
     for elem in _database:
@@ -34,6 +33,3 @@ def find_degrees_2(initial_element: str, end_element: str, _database: list, path
             newpath = find_degrees_2(elem_name, end_element, _database, path)
             if newpath:
                 return newpath
-
-
-

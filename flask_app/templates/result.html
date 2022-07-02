@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<br><br>
+<h3>
+    &nbsp;Path from {{ start }} to {{ end }}:
+</h3>
+<div class="center">
+    <ul class="list-group">
+        {% if path %}
+            {% for i in path %}
+            <li class="list-group-item">{{ i }}</li>
+            {% endfor %}
+        {% endif %}
+    </ul>
+    <br>
+    <span class="border border-top">
+        {{ arrowed_path }}
+    </span>
+</div>
+{% endblock body %}}

@@ -51,6 +51,6 @@ wheels/
 *.egg
 
 
-garbage.py
+flask_app/garbage.py
 
 justatest.py
