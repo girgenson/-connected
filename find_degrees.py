@@ -1,24 +1,11 @@
-def find_degrees(initial_element: int, end_element: int, _database: dict, path: list = []):
-    path = path + [initial_element]
-    if initial_element == end_element:
-        return path
-    if initial_element not in _database:
-        return None
-    for elem in _database[initial_element]['links']:
-        if elem not in path:
-            newpath = find_degrees(elem, end_element, _database, path)
-            if newpath:
-                return newpath
-
-
-def find_degrees_2(initial_element: str, end_element: str, _database: list, path: list = []):
+def find_degrees(initial_element: str, end_element: str, _database: list, path: list = []):
     path = path + [initial_element]
     current_id = None
-    if initial_element == end_element:
+    if initial_element.lower() == end_element.lower():
         return path
     for elem in _database:
         extract_name = elem.get('name')
-        if initial_element == extract_name:
+        if initial_element.lower() == extract_name.lower():
             current_id = elem['id']
             break
 
@@ -30,6 +17,6 @@ def find_degrees_2(initial_element: str, end_element: str, _database: list, path
         elem_name = [i['name'] for i in _database if i['id'] == elem_id][0]
 
         if elem_name not in path:
-            newpath = find_degrees_2(elem_name, end_element, _database, path)
+            newpath = find_degrees(elem_name, end_element, _database, path)
             if newpath:
                 return newpath

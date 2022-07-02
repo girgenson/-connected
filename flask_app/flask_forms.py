@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request
 from flask_bootstrap import Bootstrap
 
-from find_degrees import find_degrees_2
+from find_degrees import find_degrees
 from db import entries
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ def home():
     if request.method == "POST":
         start = request.form.get('first_element')
         end = request.form.get('second_element')
-        path = find_degrees_2(start, end, entries)
+        path = find_degrees(start, end, entries)
         print(start)
         print(end)
         print(path)
