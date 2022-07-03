@@ -50,7 +50,4 @@ wheels/
 .installed.cfg
 *.egg
 
-
-flask_app/garbage.py
-
 justatest.py

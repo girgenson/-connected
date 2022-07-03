@@ -10,21 +10,30 @@
           integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <title>
+
+
         {% block title %}
-            {{ title }}
+            ?connected
         {% endblock title %}
+
+
     </title>
 </head>
 
 <body>
 
+
 {%  include 'navbar.html' %}
+
+
 
 <div class="container">
     {% block body %}
 
     {% endblock body %}
 </div>
+
+
 
 <!-- Optional JavaScript -->
 <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -39,3 +48,4 @@
         crossorigin="anonymous"></script>
 </body>
 </html>
+

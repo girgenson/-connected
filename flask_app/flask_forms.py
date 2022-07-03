@@ -28,8 +28,23 @@ def search_connection():
             arrowed_path = '<b> -> </b>'.join(path)
         else:
             arrowed_path = f'There is no connection between {start} and {end}'
+    else:
+        arrowed_path = ''
 
     return render_template('result.html', path=path, arrowed_path=arrowed_path, start=start, end=end)
+
+
+@app.errorhandler(405)
+def page_not_found(_error):
+    return render_template('405.html'), 405
+
+@app.errorhandler(404)
+def page_not_found(_error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def initial_server_error(_error):
+    return render_template('500.html'), 500
 
 
 if __name__ == "__main__":
