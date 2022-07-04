@@ -4,9 +4,6 @@ def find_name_with_correct_case_in_db(element, db):
             return elem['name']
 
 
-
-
-
 def find_degrees(initial_element: str, end_element: str, _database: list, path: list = []):
     elem_with_correct_case = find_name_with_correct_case_in_db(initial_element, _database)
     path = path + [elem_with_correct_case]

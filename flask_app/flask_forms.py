@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 
-from flask import Flask, render_template, request, session, redirect, url_for
+from flask import Flask, render_template, request, session, redirect, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_moment import Moment
 
@@ -45,6 +45,7 @@ def form_2():
 @app.route('/home', methods=['GET', 'POST'])
 @app.route('/')
 def home():
+    flash('Test alert')
     return render_template('home.html', current_time=datetime.utcnow())
 
 
@@ -55,7 +56,8 @@ def search_connection():
     path = None
     if start and end:
         path = find_degrees(start, end, entries)
-        if path:
+        if path is not None:
+            print(path)
             arrowed_path = '<b> -> </b>'.join(path)
         else:
             arrowed_path = f'There is no connection between {start} and {end}'
@@ -82,5 +84,4 @@ def initial_server_error(_error):
 
 
 if __name__ == "__main__":
-    print(app.config)
     app.run(debug=True, port=-2)
