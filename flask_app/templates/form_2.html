@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %}
+{{ super() }} form_2
+{% endblock title %}}
+
+
+{% block body %}
+<br><br>
+<h1>How connected two items?</h1>
+<br><br><br><br>
+{{ entry_1 }}<br><br>{{ entry_2 }}
+<br><br><br><br>
+{{ path }}
+<br><br><br><br>
+{{ wtf.quick_form(form) }}
+
+{% endblock body %}

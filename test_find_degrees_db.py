@@ -35,11 +35,24 @@ class TestStringMethods(unittest.TestCase):
             path = find_degrees(i, i, entries)
             self.assertEqual((i, i), (path[0], path[-1]))
 
-    def test_seme_element_path_length(self):
+    def test_same_element_path_length(self):
         all_elems = [i['name'] for i in entries]
         for i in all_elems:
             path = find_degrees(i, i, entries)
             self.assertEqual(1, len(path))
+
+    def test_first_element_is_digit_not_in_db(self):
+        path = find_degrees('213', 'Danja', entries)
+        self.assertEqual(None, path)
+
+    def test_first_item_given_different_case(self):
+        path = find_degrees('wall-e', 'Danja', entries)
+        print('PATTTH:', path)
+        self.assertEqual(['WALL-E', 'The_A.V._Club', 'Pink: The Truth About Love', 'Sober_(Pink_song)', 'Danja'], path)
+
+    def test_second_item_given_different_case(self):
+        path = find_degrees('WALL-E', 'danja', entries)
+        self.assertEqual(['WALL-E', 'The_A.V._Club', 'Pink: The Truth About Love', 'Sober_(Pink_song)', 'Danja'], path)
 
 
 if __name__ == '__main__':

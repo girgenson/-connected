@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 
+
+
 {% block title %}
-    ?connected
+?connected
 {% endblock title %}
 
 
@@ -22,5 +24,12 @@
     <button type="submit">Check</button>
 </form>
 
+
+
+
+
+<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <p>The local date and time is {{ moment(current_time).format('LLL') }}</p>
+    <p>That was {{ moment(current_time).fromNow(refresh=True) }}</p>
 {% endblock body %}
 

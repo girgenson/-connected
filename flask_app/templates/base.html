@@ -27,13 +27,17 @@
 {%  include 'navbar.html' %}
 
 
-
 <div class="container">
     {% block body %}
 
     {% endblock body %}
 </div>
 
+
+{% block scripts %}
+
+{{ moment.include_moment() }}
+{% endblock scripts %}
 
 
 <!-- Optional JavaScript -->
@@ -49,4 +53,3 @@
         crossorigin="anonymous"></script>
 </body>
 </html>
-
