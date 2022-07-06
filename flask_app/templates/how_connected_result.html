@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}
+?result
+{% endblock title %}
+
+
+{% block content %}
+<br><br>
+{% if session['path'] %}
+<h3>
+    &nbsp;Path from <b>{{ session['entry_1'] }}</b> to <b>{{ session['entry_2'] }}</b>:
+</h3>
+<div class="center">
+
+    <ul class="list-group">
+
+        {% for i in session['path'] %}
+        <li class="list-group-item">{{ i }}</li>
+        {% endfor %}
+
+    </ul>
+    <br>
+
+    Degrees of separation: <b>{{ session['path']|length- 2 }}</b>
+
+    <br>
+    <br>
+    <span class="border border-top">
+        {{ session['arrowed_path']|safe }}
+    </span>
+{% else %}
+    <h3>There is no connection between <b>{{ session['entry_1'] }}</b> and <b>{{ session['entry_2'] }}</b></h3>
+{% endif %}
+</div>
+
+{% endblock content %}

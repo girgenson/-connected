@@ -15,7 +15,6 @@
             ?connected
         {% endblock title %}
 
-
     </title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
@@ -27,10 +26,8 @@
 {%  include 'navbar.html' %}
 
 
-
 <div class="container">
     {% block content %}
-
         <div class="container">
             {% for message in get_flashed_messages() %}
             <div class="alert alert-warning">

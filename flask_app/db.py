@@ -1,7 +1,6 @@
 import random
 
 n = random.randint(10 ** 9, 10 ** 10)
-print(n)
 type_of_entries = {1: 'person', 2: 'musician', 3: 'rapper', 4: 'actor', 5: 'article', 6: 'song', 7: 'track',
                    8: 'producer', 9: 'songwriter', 10: 'article', 11: 'movie_director', 12: 'online newspaper',
                    13: 'film', 14: 'animated film'}

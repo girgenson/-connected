@@ -1,36 +1,15 @@
 {% extends 'base.html' %}
-
-
+{% import "bootstrap/wtf.html" as wtf %}
 
 {% block title %}
-?connected
-{% endblock title %}
+{{ super() }} form_2
+{% endblock title %}}
 
 
 {% block content %}
-{{ super() }}
 <br><br>
 <h1>How connected two items?</h1>
-<form method="POST" action="/~connected">
-    First name/title:
-    <br>
-    <input name="first_element">
-    <br>
-    <br>
-    Second name/title:
-    <br>
-    <input name="second_element">
-    <br>
-    <br>
-    <button type="submit">Check</button>
-</form>
+<br>
+{{ wtf.quick_form(form) }}
 
-
-
-
-
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-    <p>The local date and time is {{ moment(current_time).format('LLL') }}</p>
-    <p>That was {{ moment(current_time).fromNow(refresh=True) }}</p>
 {% endblock content %}
-
