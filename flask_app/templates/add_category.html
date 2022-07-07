@@ -3,7 +3,7 @@
 
 
 {% block title %}
-?connected
+{{ super() }} add category
 {% endblock title %}
 
 
@@ -18,10 +18,8 @@
 
 
 <br><br>
-<h1>Add new entry</h1>
+<h1>Add new category</h1>
 <br>
-
-
 {{ wtf.quick_form(form) }}
 
 
