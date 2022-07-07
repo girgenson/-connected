@@ -4,7 +4,9 @@ from datetime import datetime
 
 from flask import Flask, render_template, request, session, redirect, url_for, flash, Response
 from flask_bootstrap import Bootstrap
+from flask_migrate import Migrate
 from flask_moment import Moment
+
 
 from find_degrees import find_degrees
 from db import entries, type_of_entries
@@ -29,6 +31,9 @@ db = SQLAlchemy(app)
 
 Bootstrap(app)
 moment = Moment(app)
+
+
+migrate = Migrate(app, db)
 
 #
 # class Role(db.Model):
