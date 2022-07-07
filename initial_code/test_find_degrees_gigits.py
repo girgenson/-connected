@@ -1,6 +1,6 @@
 import unittest
 
-from find_degrees import find_degrees
+from flask_app.find_degrees import find_degrees
 
 
 class TestStringMethods(unittest.TestCase):

@@ -1,9 +1,9 @@
 import unittest
 from itertools import permutations
 
-from find_degrees import find_degrees
+from flask_app.find_degrees import find_degrees
 
-from db import entries
+from flask_app.db import entries
 
 
 class TestStringMethods(unittest.TestCase):

@@ -55,8 +55,8 @@ class Entry(db.Model):
     __tablename__ = 'entry'
     id = db.Column(db.Integer, unique=True, index=True, primary_key=True)
     title = db.Column(db.String(255), unique=True, index=True)
-    # alias = db.relationship('Alias', backref='entry')
     content = db.Column(db.String)
+
     # editor == ...
 
     def __repr__(self):
@@ -74,10 +74,6 @@ class Entry(db.Model):
 #     title = db.Column(db.String(255), unique=True, index=True)
 #
 
-class MultiCheckboxField(SelectMultipleField):
-    widget = widgets.ListWidget(prefix_label=False)
-    option_widget = widgets.CheckboxInput()
-
 
 class NameForm(FlaskForm):
     entry_1 = StringField('First entry', validators=[DataRequired()])
@@ -87,9 +83,9 @@ class NameForm(FlaskForm):
 
 class AddEntryForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    alias = StringField('Alias')
-    type = SelectMultipleField('Type',
-                               choices=[('', '')] + list(enumerate([i.capitalize() for i in type_of_entries.values()])))
+    choices = list(enumerate([i.capitalize() for i in type_of_entries.values()]))
+    # select_multiple_field = SelectMultipleField('Type', choices=[('', '')] + choices,
+    #                                             option_widget=widgets.CheckboxInput())
     content = StringField('Content')
     submit = SubmitField('Add')
 
@@ -117,17 +113,17 @@ def home():
 def add_entry():
     form = AddEntryForm()
     if form.validate_on_submit():
-        title, content, alias = form.title.data, form.content.data, form.alias.data
+        title, content, alias = request.form.get('title'), request.form.get('content'), request.form.get('alias')
         if Entry.query.filter_by(title=title).all():
             flash('This title already exists')
             form.title.data = ''
-            return render_template('add_entry.html', form=form, session=session)
+            return render_template('add_entry.html', form=form)
         entry = Entry(title=title, content=content)
         db.session.add(entry)
         db.session.commit()
         session['entry_id'] = Entry.query.filter_by(title=title).all()[0].id
         return redirect(f'added_entry/{session.get("entry_id")}')
-    return render_template('add_entry.html', form=form, session=session)
+    return render_template('add_entry.html', form=form)
 
 
 @app.route('/added_entry/<entry_id>')
