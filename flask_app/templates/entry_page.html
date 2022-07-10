@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Entry
+{% endblock title %}
+
+
+{% block content %}
+<a href="/all_entries">Back</a>
+
+<h3>Entry</h3>
+
+{{ entry.title }}
+<br>
+{{ entry.content }}
+<br>
+Links: {{ entry.links }}
+
+
+
+
+{% endblock content %}

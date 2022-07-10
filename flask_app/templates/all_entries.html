@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+{{ super() }} Entries
+{% endblock title %}
+
+
+{% block content %}
+
+
+
+
+{% for i in _all_entries %}
+    <a href="/entries/{{i.id}}">{{ i.title }}</a>
+    <br>
+    {{ i.content[:50] }}
+    <br><br>
+{% endfor %}
+
+{% endblock content %}

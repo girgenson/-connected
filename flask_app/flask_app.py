@@ -2,7 +2,7 @@ import os
 import pprint
 from datetime import datetime
 
-from flask import Flask, render_template, request, session, redirect, url_for, flash, Response
+from flask import Flask, render_template, request, session, redirect, url_for, flash, Response, abort
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_moment import Moment
@@ -12,7 +12,7 @@ from find_degrees import find_degrees
 from db import entries, type_of_entries
 
 from flask_wtf import FlaskForm
-from wtforms import StringField, SubmitField, SelectMultipleField, widgets, SelectField
+from wtforms import StringField, SubmitField, SelectMultipleField, widgets, SelectField, TextAreaField
 from wtforms.validators import DataRequired
 from flask_sqlalchemy import SQLAlchemy
 
@@ -97,7 +97,7 @@ class Category(db.Model):
 #     title = db.Column(db.String(255), unique=True, index=True)
 
 
-class NameForm(FlaskForm):
+class EntriesToFindConnection(FlaskForm):
     entry_1 = StringField('First entry', validators=[DataRequired()])
     entry_2 = StringField('Second entry', validators=[DataRequired()])
     submit = SubmitField('Find connection')
@@ -108,8 +108,9 @@ class AddEntryForm(FlaskForm):
     # choices = list(enumerate([i.capitalize() for i in type_of_entries.values()]))
     # select_multiple_field = SelectMultipleField('Type', choices=[('', '')] + choices,
     #                                             option_widget=widgets.CheckboxInput())
-    content = StringField('Content')
-    category = SelectMultipleField('Category', choices=[i.title for i in Category.query.all()], option_widget=widgets.CheckboxInput())
+    content = TextAreaField('Content')
+    category = SelectMultipleField('Category', choices=[i.title for i in Category.query.all()],
+                                   option_widget=widgets.CheckboxInput())
     submit = SubmitField('Add')
 
 
@@ -121,7 +122,7 @@ class AddCategoryForm(FlaskForm):
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/home', methods=['GET', 'POST'])
 def home():
-    form = NameForm()
+    form = EntriesToFindConnection()
     if form.validate_on_submit():
         start = form.entry_1.data
         end = form.entry_2.data
@@ -142,6 +143,7 @@ def add_entry():
     form = AddEntryForm()
     if form.validate_on_submit():
         title, content, alias = request.form.get('title'), request.form.get('content'), request.form.get('alias')
+        # TODO: check if there is same title
         # if Entry.query.filter_by(title=title).all():
         #     flash('This title already exists')
         #     form.title.data = ''
@@ -170,15 +172,23 @@ def add_category():
     return render_template('add_category.html', form=form)
 
 
+@app.route('/all_entries')
+def all_entries():
+    return render_template('all_entries.html', _all_entries=Entry.query.all())
+
+
 @app.route('/all_categories')
 def all_categories():
-    _all_categories = Category.query.all()
-    return render_template('all_categories.html', _all_categories=_all_categories)
+    return render_template('all_categories.html', _all_categories=Category.query.all())
 
 
-@app.route('/added_entry/<entry_id>')
-def added_entry(entry_id):
-    return render_template('added_entry.html', db=db, Entry=Entry, session=session, entry_id=entry_id)
+@app.route('/entries/<int:entry_id>')
+def entry_page(entry_id):
+    try:
+        entry = Entry.query.filter_by(id=entry_id).all()[0]
+    except IndexError:
+        return abort(404)
+    return render_template('entry_page.html', db=db, entry=entry, session=session)
 
 
 @app.errorhandler(405)
@@ -198,3 +208,6 @@ def initial_server_error(_error):
 
 if __name__ == "__main__":
     app.run(debug=True, port=-2)
+
+
+# TODO: add dates in entries

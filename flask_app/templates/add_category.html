@@ -14,13 +14,14 @@
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     {{ message }}
 </div>
-{% endfor %}
+{% end-for %}
 
 
 <br><br>
 <h1>Add new category</h1>
 <br>
-{{ wtf.quick_form(form) }}
-
+<div class="shadow-lg p-3 mb-5 bg-body rounded">
+    {{ wtf.quick_form(form) }}
+</div>
 
 {% endblock content %}
