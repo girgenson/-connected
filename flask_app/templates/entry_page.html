@@ -40,6 +40,16 @@ Entry
         <input type="submit" class="btn btn-light" value="Edit"/>
 
     </form>
-
 </div>
+
+<br>
+
+<div style="position:relative; left:-80px; top:2px;">
+    <form action="/entries/{{ entry.id }}/delete">
+        <input type="submit" class="btn btn-light" value="Delete"/>
+
+    </form>
+</div>
+
+
 {% endblock content %}
