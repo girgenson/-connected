@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+
+{% block title %}
+{{ super() }} Categories
+{% endblock title %}
+
+
+{% block content %}
+
+
+<br>
+
+<h3>Categories</h3>
+<a href="add_category">Add category</a>
+<br><br>
+{% for i in _all_categories %}
+
+    {{ i.title }}
+
+    <br>
+{% endfor %}
+
+
+{% for i in cats_list_type %}
+
+    {{ i }}
+
+    <br>
+{% endfor %}
+
+
+{% endblock content %}

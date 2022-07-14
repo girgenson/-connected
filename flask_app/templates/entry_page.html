@@ -6,17 +6,40 @@ Entry
 
 
 {% block content %}
-<a href="/all_entries">Back</a>
 
-<h3>Entry</h3>
 
-{{ entry.title }}
 <br>
-{{ entry.content }}
-<br>
-Links: {{ entry.links }}
+<div style="position:relative; left:-80px; top:2px;">
+    <form action="/entries">
+        <input type="submit" class="btn btn-light" value="Back"/>
 
+    </form>
 
+</div>
+        <h3>{{ entry.title }}</h3>
+        {% if entry.content %}
+        Content: <br>{{ entry.content }}
+        {% endif %}
+        {% if entry.links %}
+        Links: {{ entry.links }}
+        {% endif %}
+        <br>
+        {% if entry.category %}
+        Categories: {{ entry.category }}
+        {% endif %}
+        entry.category {{ entry.category }}
+        <br>
+        entry.categories {{ entry.categories }}
+        <br><br>
+        _categories {{ _categories }}
+        <br><br>
+        {{ entry }}
 
+<div style="position:relative; left:-80px; top:2px;">
+    <form action="/entries/{{ entry.id }}/edit">
+        <input type="submit" class="btn btn-light" value="Edit"/>
 
+    </form>
+
+</div>
 {% endblock content %}

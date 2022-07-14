@@ -7,9 +7,8 @@ from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_moment import Moment
 
-
 from find_degrees import find_degrees
-from db import entries, type_of_entries
+from db import entries
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, SelectMultipleField, widgets, SelectField, TextAreaField
@@ -18,12 +17,13 @@ from flask_sqlalchemy import SQLAlchemy
 
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
+app.config['ENV'] = 'development'
+app.config['TESTING'] = True
 app.config['SECRET_KEY'] = os.getenv('FL_CONN_SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'data.sqlite3')
 app.config['SQLALCHEMY_COMMIT_ON_TEARDOWN'] = True
@@ -32,7 +32,6 @@ db = SQLAlchemy(app)
 
 Bootstrap(app)
 moment = Moment(app)
-
 
 migrate = Migrate(app, db)
 
@@ -57,33 +56,32 @@ migrate = Migrate(app, db)
 #         return f'<User {self.username}>'
 
 
-entry_category = db.Table('association', db.Model.metadata,
-                          db.Column('Entry_id', db.Integer, db.ForeignKey('Entry.id')),
-                          db.Column('Category_id', db.Integer, db.ForeignKey('Category.id'))
-                          )
-
-
-class Entry(db.Model):
-    __tablename__ = 'Entry'
-    id = db.Column(db.Integer, unique=True, index=True, primary_key=True)
-    title = db.Column(db.String(255), unique=True, index=True)
-    content = db.Column(db.String)
-    category = db.relationship('Category', secondary=entry_category)
-
-    # editor == ...
-
-    def __repr__(self):
-        return f'<Entry id: {self.id} title: {self.title}, content: {self.content}, ' \
-               f'categories: {", ".join([i.title for i in Entry.query.all()])}>'
+entry_category = db.Table('entry_category',
+                      db.Column('entry_id', db.Integer, db.ForeignKey('entry.id')),
+                      db.Column('category_id', db.Integer, db.ForeignKey('category.id'))
+                      )
 
 
 class Category(db.Model):
-    __tablename__ = 'Category'
-    id = db.Column(db.Integer, unique=True, index=True, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), unique=True, index=True)
 
     def __repr__(self):
         return f'<Category id: {self.id} title: {self.title}>'
+
+
+class Entry(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), unique=True, index=True)
+    content = db.Column(db.Text)
+    categories = db.relationship('Category', secondary=entry_category, backref='entries')
+
+    # author = ...
+    # editor = ...
+
+    def __repr__(self):
+        return f'<Entry id: {self.id} title: {self.title}, content: {self.content}, ' \
+               f'categories: {[i for i in self.categories]}>'
 
 
 # class Alias(db.Model):
@@ -103,18 +101,15 @@ class EntriesToFindConnection(FlaskForm):
     submit = SubmitField('Find connection')
 
 
-class AddEntryForm(FlaskForm):
+class EntryForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
-    # choices = list(enumerate([i.capitalize() for i in type_of_entries.values()]))
-    # select_multiple_field = SelectMultipleField('Type', choices=[('', '')] + choices,
-    #                                             option_widget=widgets.CheckboxInput())
     content = TextAreaField('Content')
-    category = SelectMultipleField('Category', choices=[i.title for i in Category.query.all()],
-                                   option_widget=widgets.CheckboxInput())
+    # categories = SelectMultipleField('Category', choices=Category.query.all())
+    categories = SelectMultipleField('Category', choices=[i.title for i in Category.query.all()])
     submit = SubmitField('Add')
 
 
-class AddCategoryForm(FlaskForm):
+class CategoryForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     submit = SubmitField('Add')
 
@@ -140,55 +135,96 @@ def home():
 
 @app.route('/add_entry', methods=['GET', 'POST'])
 def add_entry():
-    form = AddEntryForm()
+    form = EntryForm()
     if form.validate_on_submit():
-        title, content, alias = request.form.get('title'), request.form.get('content'), request.form.get('alias')
+        title = request.form.get('title')
+        content = request.form.get('content')
+
+        #categories = request.form.get('categories')
+        categories_from_form = request.form.getlist('categories')
+        print('categories_from_form', categories_from_form)
+        # categories = [Category(title=title) for title in categories_from_form]
+        print('title', title)
+        print('content', content)
+        categories = []
+        for i in categories_from_form:
+            print('type(i)', type(i))
+            print(i)
+            print('Category.query.filter_by(title=i).first()', Category.query.filter_by(title=i).first())
+            categories.append(Category.query.filter_by(title=i).first())
+        print("CATEGORIESSSS", categories)
+        print('time', datetime.utcnow())
         # TODO: check if there is same title
         # if Entry.query.filter_by(title=title).all():
         #     flash('This title already exists')
         #     form.title.data = ''
         #     return render_template('add_entry.html', form=form)
-        entry = Entry(title=title, content=content)
+        entry = Entry(title=title, content=content, categories=categories)
+        # if categories:
+        #     entry.categories = categories
         db.session.add(entry)
         db.session.commit()
         session['entry_id'] = Entry.query.filter_by(title=title).all()[0].id
-        return redirect(f'added_entry/{session.get("entry_id")}')
+
+        return redirect(f'entries/{session.get("entry_id")}')
     return render_template('add_entry.html', form=form)
 
 
 @app.route('/add_category', methods=['GET', 'POST'])
 def add_category():
-    form = AddCategoryForm()
+    form = CategoryForm()
     if form.validate_on_submit():
         title = request.form.get('title')
-        if Category.query.filter_by(title=title).all():
-            flash('This category already exists')
-            form.title.data = ''
-            return render_template('add_category.html', form=form)
         category = Category(title=title)
         db.session.add(category)
         db.session.commit()
-        return redirect('all_categories')
+        return redirect('categories')
     return render_template('add_category.html', form=form)
 
 
-@app.route('/all_entries')
+@app.route('/entries')
 def all_entries():
-    return render_template('all_entries.html', _all_entries=Entry.query.all())
+    return render_template('entries.html', _all_entries=Entry.query.all())
 
 
-@app.route('/all_categories')
+@app.route('/categories')
 def all_categories():
-    return render_template('all_categories.html', _all_categories=Category.query.all())
+    return render_template('categories.html', _all_categories=Category.query.all(), cats_list_type=[type(i) for i in Category.query.all()])
 
 
 @app.route('/entries/<int:entry_id>')
 def entry_page(entry_id):
     try:
         entry = Entry.query.filter_by(id=entry_id).all()[0]
+        _categories = [i.title for i in entry.categories]
     except IndexError:
         return abort(404)
+    return render_template('entry_page.html', db=db, entry=entry, session=session, _categories=_categories)
+
+
+@app.route('/entries/<int:entry_id>/edit', methods=['GET', 'POST'])
+def edit_entry(entry_id):
+    form = EntryForm()
+    entry = Entry.query.filter_by(id=entry_id).first_or_404()
+
+    try:
+        if request.method == "POST":
+            form.title = request.form['title']
+            form.content = request.form['content']
+            form.links = request.form['links']
+            form.categories = request.form['categories']
+            try:
+                db.session.commit()
+                flash('Edited successfully')
+                return render_template('update_entry.html', form=form, etnry=entry)
+            except:
+                flash('Error. Try again')
+                return render_template('update_entry.html', form=form, etnry=entry)
+    except IndexError:
+        return abort(404)
+
     return render_template('entry_page.html', db=db, entry=entry, session=session)
+
 
 
 @app.errorhandler(405)
@@ -207,7 +243,6 @@ def initial_server_error(_error):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=-2)
-
+    app.run(debug=True, port=2)
 
 # TODO: add dates in entries
