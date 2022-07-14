@@ -227,6 +227,17 @@ def edit_entry(entry_id):
 
 
 
+@app.route('/entries/<int:entry_id>/delete')
+def delete_entry(entry_id):
+    try:
+        Entry.query.filter_by(id=entry_id).delete()
+        flash('Entrie deleted')
+        return redirect('/entries')
+    except:
+        flash('Something wrong')
+        return redirect(f'/entries/{entry_id}')
+
+
 @app.errorhandler(405)
 def page_not_found(_error):
     return render_template('405.html'), 405
