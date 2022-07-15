@@ -2,10 +2,12 @@ import os
 import pprint
 from datetime import datetime
 
+import sqlalchemy
 from flask import Flask, render_template, request, session, redirect, url_for, flash, Response, abort
 from flask_bootstrap import Bootstrap
 from flask_migrate import Migrate
 from flask_moment import Moment
+from sqlalchemy import engine
 
 from find_degrees import find_degrees
 from db import entries
@@ -70,14 +72,28 @@ class Category(db.Model):
         return f'<Category id: {self.id} title: {self.title}>'
 
 
+links_table = db.Table('links',
+                       db.Column('primary_entry_id', db.Integer, db.ForeignKey('entry.id')),
+                       db.Column('secondary_entry_id', db.Integer, db.ForeignKey('entry.id'))
+                       )
+
+
 class Entry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), unique=True, index=True)
     content = db.Column(db.Text)
     categories = db.relationship('Category', secondary=entry_category, backref='entries')
 
+    # TODO:
     # author = ...
     # editor = ...
+
+    links = db.relationship('Entry',
+                            secondary=links_table,
+                            primaryjoin=(links_table.c.primary_entry_id == id),
+                            secondaryjoin=(links_table.c.secondary_entry_id == id),
+                            lazy='dynamic'
+                            )
 
     def __repr__(self):
         return f'<Entry id: {self.id} title: {self.title}, content: {self.content}, ' \
@@ -104,7 +120,10 @@ class EntriesToFindConnection(FlaskForm):
 class EntryForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content')
+    #try:
     categories = SelectMultipleField('Category', choices=[i.title for i in Category.query.all()])
+    # except sqlalchemy.exc.OperationalError:
+    #     print('(There is no "categories" table yet)')
     submit = SubmitField('Add')
 
     def __repr__(self):
@@ -142,7 +161,13 @@ def add_entry():
         title = request.form.get('title')
         content = request.form.get('content')
         categories_from_form = request.form.getlist('categories')
-        categories = [Category.query.filter_by(title=i).first() for i in categories_from_form]
+        if not categories_from_form:
+            categories_from_form = request.form.get('categories')
+        try:
+            categories = [Category.query.filter_by(title=i).first() for i in categories_from_form]
+        except TypeError:
+            categories = []
+            print('Categories are probably NONE')
         # TODO: check if there is same title
         # if Entry.query.filter_by(title=title).all():
         #     flash('This title already exists')
@@ -198,9 +223,13 @@ def edit_entry(entry_id):
     if form.validate_on_submit():
         entry.title = request.form['title']
         entry.content = request.form['content']
-        cats = request.form.get('categories')
-        print('cats', cats)
-        # entry.categories = request.form['categories']
+        categories = request.form.getlist('categories')
+        if not categories:
+            categories = request.form.get('categories')
+        categories_ = [Category.query.filter_by(title=i).first() for i in categories]
+        print('categories_', categories_)
+        entry.categories = categories_
+
         try:
             db.session.commit()
             flash('Edited successfully')
